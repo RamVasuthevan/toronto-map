@@ -4,10 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-openpyxl = "3.1.2"
+ipykernel = "6.25.2"
 
 [dev-packages]
-black = "23.9.0"
-ipykernel = "*"
+black = "23.7.0"
+pre-commit = "3.4.0"
 
 [requires]
+python_version = "3.11.5"
