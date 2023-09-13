@@ -1,0 +1,322 @@
+Address points:
+Address point count: 525838
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| pk_uid      | INT  |
+| geo_id      | INT  |
+| link        | INT  |
+| maint_stag  | TEXT |
+| address     | TEXT |
+| lfname      | TEXT |
+| lo_num      | INT  |
+| lonumsuf    | TEXT |
+| hinum       | INT  |
+| hinumsuf    | TEXT |
+| arc_side    | TEXT |
+| distance    | REAL |
+| fcode       | INT  |
+| fcode_des   | TEXT |
+| class       | TEXT |
+| name        | TEXT |
+| x           | REAL |
+| y           | REAL |
+| longitude   | REAL |
+| latitude    | REAL |
+| objectid    | REAL |
+| mun_name    | TEXT |
+| ward_name   | TEXT |
+| geometry    | INT  |
++-------------+------+
+Note: The 'pk_uid' column is a primary key column typically added during the import process for unique identification.
+
+
+Columns in address_points:
++----------------+--------------------+
+| Unique Columns | Non-unique Columns |
++----------------+--------------------+
+| pk_uid         | link               |
+| geo_id         | maint_stag         |
+| objectid       | address            |
+| geometry       | lfname             |
+|                | lo_num             |
+|                | lonumsuf           |
+|                | hinum              |
+|                | hinumsuf           |
+|                | arc_side           |
+|                | distance           |
+|                | fcode              |
+|                | fcode_des          |
+|                | class              |
+|                | name               |
+|                | x                  |
+|                | y                  |
+|                | longitude          |
+|                | latitude           |
+|                | mun_name           |
+|                | ward_name          |
++----------------+--------------------+
+
+
+
+
+Delete legacy columns: FCODE and FCODE_DES
+Columns FCODE, FCODE_DES deleted from address_points.
+
+GEO_ID: unique geographic identifier
+LINK: geo_id of the primary address
+Frequency of frequency for column 'link' in table 'address_points':
++-----------+---------------------+
+| Frequency | Count of Occurrence |
++-----------+---------------------+
+| 1         | 3502                |
+| 2         | 2696                |
+| 3         | 2248                |
+| 4         | 2138                |
+| 5         | 1932                |
+| 6         | 1828                |
+| 7         | 1655                |
+| 8         | 1574                |
+| 9         | 1382                |
+| 10        | 1288                |
+| 11        | 1112                |
+| 12        | 1095                |
+| 14        | 902                 |
+| 13        | 867                 |
+| 16        | 809                 |
+| 15        | 772                 |
+| 18        | 738                 |
+| 17        | 646                 |
+| 20        | 606                 |
+| 19        | 580                 |
+| 22        | 549                 |
+| 21        | 546                 |
+| 24        | 473                 |
+| 23        | 469                 |
+| 26        | 445                 |
+| 25        | 407                 |
+| 27        | 386                 |
+| 29        | 363                 |
+| 28        | 342                 |
+| 30        | 306                 |
+| 31        | 285                 |
+| 32        | 249                 |
+| 33        | 247                 |
+| 34        | 244                 |
+| 36        | 206                 |
+| 35        | 195                 |
+| 38        | 187                 |
+| 39        | 159                 |
+| 37        | 145                 |
+| 41        | 134                 |
+| 40        | 123                 |
+| 42        | 118                 |
+| 43        | 112                 |
+| 46        | 101                 |
+| 44        | 94                  |
+| 51        | 93                  |
+| 45        | 93                  |
+| 48        | 89                  |
+| 47        | 83                  |
+| 50        | 77                  |
+| 49        | 75                  |
+| 53        | 72                  |
+| 52        | 70                  |
+| 54        | 66                  |
+| 56        | 59                  |
+| 55        | 52                  |
+| 57        | 50                  |
+| 59        | 49                  |
+| 60        | 45                  |
+| 61        | 44                  |
+| 63        | 35                  |
+| 58        | 33                  |
+| 64        | 32                  |
+| 62        | 30                  |
+| 68        | 30                  |
+| 67        | 25                  |
+| 70        | 23                  |
+| 71        | 23                  |
+| 78        | 23                  |
+| 69        | 22                  |
+| 66        | 22                  |
+| 65        | 21                  |
+| 74        | 21                  |
+| 75        | 18                  |
+| 73        | 16                  |
+| 76        | 15                  |
+| 79        | 14                  |
+| 77        | 13                  |
+| 81        | 13                  |
+| 72        | 13                  |
+| 91        | 12                  |
+| 83        | 12                  |
+| 86        | 12                  |
+| 84        | 10                  |
+| 89        | 10                  |
+| 80        | 10                  |
+| 85        | 10                  |
+| 109       | 10                  |
+| 87        | 9                   |
+| 92        | 9                   |
+| 93        | 7                   |
+| 101       | 7                   |
+| 82        | 7                   |
+| 103       | 7                   |
+| 104       | 6                   |
+| 96        | 6                   |
+| 88        | 6                   |
+| 90        | 6                   |
+| 97        | 6                   |
+| 100       | 5                   |
+| 115       | 4                   |
+| 102       | 4                   |
+| 99        | 4                   |
+| 139       | 4                   |
+| 98        | 4                   |
+| 120       | 3                   |
+| 106       | 3                   |
+| 95        | 3                   |
+| 105       | 3                   |
+| 94        | 3                   |
+| 112       | 3                   |
+| 108       | 2                   |
+| 130       | 2                   |
+| 107       | 2                   |
+| 110       | 2                   |
+| 123       | 2                   |
+| 154       | 2                   |
+| 126       | 2                   |
+| 114       | 2                   |
+| 116       | 2                   |
+| 111       | 2                   |
+| 117       | 2                   |
+| 135       | 1                   |
+| 122       | 1                   |
+| 150       | 1                   |
+| 136       | 1                   |
+| 137       | 1                   |
+| 125       | 1                   |
+| 148       | 1                   |
+| 118       | 1                   |
+| 127       | 1                   |
+| 141       | 1                   |
+| 119       | 1                   |
+| 164       | 1                   |
+| 140       | 1                   |
+| 129       | 1                   |
+| 121       | 1                   |
+| 113       | 1                   |
+| 128       | 1                   |
+| 134       | 1                   |
+| 214       | 1                   |
+| 158       | 1                   |
++-----------+---------------------+
+
+
+ADDRESS: address number with suffix
++------------------------+-------------------+
+| Criteria               | Address           |
++------------------------+-------------------+
+| Shortest Addresses     | 7                 |
+| Shortest Addresses     | 5                 |
+| Longest Addresses      | 2914 1/2-2916 1/2 |
+| Longest Addresses      | 3811A-3813A       |
+| Addresses with Dashes  | 3811A-3813A       |
+| Addresses with Dashes  | 3771-3773         |
+| Addresses with Slashes | 307 1/2           |
+| Addresses with Slashes | 20 1/2            |
+| Addresses with Letters | 61A               |
+| Addresses with Letters | 77A               |
++------------------------+-------------------+
+
+
+Frequency distribution for column 'maint_stag' in table 'address_points':
++------------+-----------+
+| maint_stag | Frequency |
++------------+-----------+
+| REGULAR    | 518690    |
+| RESERVED   | 7148      |
++------------+-----------+
+
+
+Frequency distribution for column 'mun_name' in table 'address_points':
++----------------+-----------+
+| mun_name       | Frequency |
++----------------+-----------+
+| former Toronto | 156934    |
+| Scarborough    | 123994    |
+| North York     | 114762    |
+| Etobicoke      | 73574     |
+| York           | 32443     |
+| East York      | 24131     |
++----------------+-----------+
+
+
+Frequency distribution for column 'ward_name' in table 'address_points':
++--------------------------+-----------+
+| ward_name                | Frequency |
++--------------------------+-----------+
+| Toronto-Danforth         | 30871     |
+| Etobicoke-Lakeshore      | 29175     |
+| Davenport                | 28831     |
+| Beaches-East York        | 28729     |
+| Eglinton-Lawrence        | 26074     |
+| Scarborough-Rouge Park   | 25738     |
+| Etobicoke Centre         | 25592     |
+| Scarborough Southwest    | 24813     |
+| York South-Weston        | 23348     |
+| Parkdale-High Park       | 22993     |
+| Don Valley West          | 21944     |
+| University-Rosedale      | 21911     |
+| Scarborough Centre       | 20113     |
+| Scarborough North        | 19848     |
+| Toronto-St. Paul's       | 19496     |
+| Etobicoke North          | 18807     |
+| York Centre              | 18724     |
+| Don Valley North         | 18507     |
+| Willowdale               | 18411     |
+| Humber River-Black Creek | 17908     |
+| Scarborough-Guildwood    | 16739     |
+| Scarborough-Agincourt    | 16670     |
+| Don Valley East          | 11108     |
+| Spadina-Fort York        | 10302     |
+| Toronto Centre           | 9186      |
++--------------------------+-----------+
+
+
+Property boundaries:
+Parcel count: 498520
++-------------+--------------+
+| Column Name | Type         |
++-------------+--------------+
+| pk_uid      | INTEGER      |
+| objectid    | DOUBLE       |
+| f_type      | TEXT         |
+| geometry    | MULTIPOLYGON |
++-------------+--------------+
+Note: The 'pk_uid' column is a primary key column typically added during the import process for unique identification.
+
+
+Columns in property_boundaries:
++----------------+--------------------+
+| Unique Columns | Non-unique Columns |
++----------------+--------------------+
+| pk_uid         | f_type             |
+| objectid       |                    |
+| geometry       |                    |
++----------------+--------------------+
+
+
+
+
+Unique values and counts for column 'f_type' in table 'property_boundaries':
++---------+--------+
+| f_type  | Count  |
++---------+--------+
+| COMMON  | 491975 |
+| CONDO   | 3593   |
+| RESERVE | 2952   |
++---------+--------+
+
+
