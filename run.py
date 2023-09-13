@@ -2,6 +2,7 @@ import os
 import sqlite3
 import zipfile
 import subprocess
+from itertools import zip_longest
 
 # Constants
 DB_PATH = "toronto.sqlite"
@@ -58,26 +59,42 @@ def get_row_count(table_name):
     conn.close()
     return count
 
+def print_table(headers, rows, note=None):
+    """Utility function to print a table"""
+    rows = list(rows)
+    col_widths = [max(len(str(item)) for item in col) for col in zip(*([headers] + rows))]
+    separator = "+" + "+".join("-" * (width + 2) for width in col_widths) + "+"
+    header_line = "|" + "|".join(f" {header:<{col_widths[idx]}} " for idx, header in enumerate(headers)) + "|"
+
+    print(separator)
+    print(header_line)
+    print(separator)
+
+    for row in rows:
+        row = [(cell if cell != '' else ' ') for cell in row]  # Replace empty strings with a single space
+        print("|" + "|".join(f" {cell:<{col_widths[idx]}} " for idx, cell in enumerate(row)) + "|")
+    print(separator)
+
+    if note:
+        print(note)
+    print("\n")
+
+
 def print_table_details(table_name):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-
-    # Get column details
     cursor.execute(f"PRAGMA table_info({table_name});")
     columns = cursor.fetchall()
-    
-    print(f"\nDetails for table: {table_name}")
-    header = "| {:<20} | {:<10} |".format("Column Name", "Type")
-    separator = "+" + "-"*22 + "+" + "-"*12 + "+"
-    print(separator)
-    print(header)
-    print(separator)
-    for column in columns:
-        print(f"| {column[1]:<20} | {column[2]:<10} |")
-    print(separator)
+
+    headers = ["Column Name", "Type"]
+    rows = [(col[1], col[2]) for col in columns]
+
+    note = None
     if any(col[1] == 'pk_uid' for col in columns):
-        print("Note: The 'pk_uid' column is a primary key column typically added during the import process for unique identification.")
-    print("\n")
+        note = "Note: The 'pk_uid' column is a primary key column typically added during the import process for unique identification."
+    
+    print_table(headers, rows, note)
+
     conn.close()
 
 def check_column_uniqueness(table_name):
@@ -120,5 +137,11 @@ if __name__ == "__main__":
 
     # Check uniqueness for property_boundaries table
     property_boundaries_unique_cols, property_boundaries_non_unique_cols = check_column_uniqueness("property_boundaries")
-    print("Columns with all values unique in property_boundaries:", property_boundaries_unique_cols)
-    print("Columns without non-unique values in property_boundaries:", property_boundaries_non_unique_cols)
+
+    # Ensure that the non-unique columns list isn't empty for the table display
+    if not property_boundaries_non_unique_cols:
+        property_boundaries_non_unique_cols.append("N/A")
+    
+    print("Columns in property_boundaries:")
+    print_table(["Unique Columns", "Non-unique Columns"],list(zip_longest(property_boundaries_unique_cols, property_boundaries_non_unique_cols,fillvalue="")))
+
