@@ -102,46 +102,196 @@ def check_column_uniqueness(table_name):
     cursor = conn.cursor()
 
     cursor.execute(f"PRAGMA table_info({table_name});")
-    columns = cursor.fetchall()
+    columns = [col[1] for col in cursor.fetchall()]
 
-    unique_columns = []
-    non_unique_columns = []
+    # Prepare a single SQL query to get distinct counts for all columns
+    distinct_counts_query = ", ".join(f"COUNT(DISTINCT {col}) AS {col}" for col in columns)
+    cursor.execute(f"SELECT {distinct_counts_query} FROM {table_name};")
+    distinct_counts = cursor.fetchone()
 
     total_rows = get_row_count(table_name)
-    for column in columns:
-        column_name = column[1]
-        cursor.execute(f"SELECT COUNT(DISTINCT {column_name}) FROM {table_name};")
-        distinct_count = cursor.fetchone()[0]
-        if distinct_count == total_rows:
-            unique_columns.append(column_name)
-        else:
-            non_unique_columns.append(column_name)
+
+    unique_columns = [col for idx, col in enumerate(columns) if distinct_counts[idx] == total_rows]
+    non_unique_columns = [col for idx, col in enumerate(columns) if distinct_counts[idx] != total_rows]
 
     conn.close()
 
     return unique_columns, non_unique_columns
 
+
+def display_column_uniqueness(table_name):
+    """
+    Check the uniqueness of each column in the provided table and display the results.
+    """
+    unique_cols, non_unique_cols = check_column_uniqueness(table_name)
+    
+    print(f"Columns in {table_name}:")
+    print_table(["Unique Columns", "Non-unique Columns"], 
+                list(zip_longest(unique_cols, non_unique_cols, fillvalue="")))
+    print("\n")
+
+def display_column_values_and_counts(table_name, column_name):
+    """
+    Fetch and display unique values and their counts for a specific column in the given table.
+    """
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    
+    cursor.execute(f"SELECT {column_name}, COUNT(*) as count FROM {table_name} GROUP BY {column_name} ORDER BY count DESC;")
+    rows = cursor.fetchall()
+    
+    headers = [column_name, "Count"]
+    
+    print(f"Unique values and counts for column '{column_name}' in table '{table_name}':")
+    print_table(headers, rows)
+    
+    conn.close()
+
+def display_frequency_distribution(table_name, column_name):
+    """
+    Fetch and display the frequency distribution for a specific column in the given table.
+    """
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    
+    # Get unique values and their counts for the specified column
+    cursor.execute(f"SELECT {column_name}, COUNT(*) as count FROM {table_name} GROUP BY {column_name} ORDER BY count DESC;")
+    rows = cursor.fetchall()
+    
+    headers = [column_name, "Frequency"]
+    
+    print(f"Frequency distribution for column '{column_name}' in table '{table_name}':")
+    print_table(headers, rows)
+    
+    conn.close()
+
+def display_frequency_of_frequency(table_name, column_name):
+    """
+    Fetch and display the frequency of frequency for a specific column in the given table.
+    """
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    
+    # Get the frequency of each unique value in the column
+    cursor.execute(f"SELECT {column_name}, COUNT(*) as freq FROM {table_name} GROUP BY {column_name};")
+    frequencies = [row[1] for row in cursor.fetchall()]
+    
+    # Calculate the frequency of each frequency
+    freq_of_freq = {}
+    for freq in frequencies:
+        freq_of_freq[freq] = freq_of_freq.get(freq, 0) + 1
+
+    sorted_freq_of_freq = sorted(freq_of_freq.items(), key=lambda x: x[1], reverse=True)
+    
+    headers = ["Frequency", "Count of Occurrence"]
+    
+    print(f"Frequency of frequency for column '{column_name}' in table '{table_name}':")
+    print_table(headers, sorted_freq_of_freq)
+    
+    conn.close()
+
+def delete_columns_from_table(table_name, columns_to_delete):
+    """
+    Delete specified columns from a table.
+    """
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    # Fetch existing columns
+    cursor.execute(f"PRAGMA table_info({table_name});")
+    all_columns = [col[1] for col in cursor.fetchall()]
+
+    # Determine columns to keep
+    columns_to_keep = [col for col in all_columns if col not in columns_to_delete]
+
+    # Create a new temporary table without the columns to delete
+    columns_str = ', '.join(columns_to_keep)
+    cursor.execute(f"CREATE TABLE {table_name}_temp AS SELECT {columns_str} FROM {table_name};")
+
+    # Drop the original table
+    cursor.execute(f"DROP TABLE {table_name};")
+
+    # Rename the temporary table to the original table's name
+    cursor.execute(f"ALTER TABLE {table_name}_temp RENAME TO {table_name};")
+
+    conn.commit()
+    conn.close()
+
+    print(f"Columns {', '.join(columns_to_delete)} deleted from {table_name}.")
+
+
+def fetch_mixed_addresses():
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    # Define the queries for each criteria
+    queries = {
+        "Shortest Addresses": "SELECT address FROM address_points ORDER BY LENGTH(address) ASC LIMIT 2;",
+        "Longest Addresses": "SELECT address FROM address_points ORDER BY LENGTH(address) DESC LIMIT 2;",
+        "Addresses with Dashes": "SELECT address FROM address_points WHERE address LIKE '%-%' LIMIT 2;",
+        "Addresses with Slashes": "SELECT address FROM address_points WHERE address LIKE '%/%' LIMIT 2;",
+        "Addresses with Letters": "SELECT address FROM address_points WHERE address GLOB '*[a-zA-Z]*' LIMIT 2;"
+    }
+
+    # Fetch addresses based on each criteria and collate them
+    mixed_addresses = []
+    for key, query in queries.items():
+        cursor.execute(query)
+        results = cursor.fetchall()
+        for address in results:
+            mixed_addresses.append((key, address[0]))
+
+    conn.close()
+    return mixed_addresses
+
+def display_mixed_addresses():
+    addresses = fetch_mixed_addresses()
+    headers = ["Criteria", "Address"]
+    print_table(headers, addresses)
+
+    
 if __name__ == "__main__":
-    #unzip_shapefiles()
-    #load_shapefiles_into_db()
+    # Uncomment the next two lines if you're importing the shapefiles for the first time
+    # unzip_shapefiles()
+    # load_shapefiles_into_db()
 
     # Address Points Section
     print("Address points:")
     print("Address point count:", get_row_count("address_points"))
     print_table_details("address_points")
+    display_column_uniqueness("address_points")
+
+    print("Delete legacy columns: FCODE and FCODE_DES")
+    delete_columns_from_table("address_points", ["FCODE", "FCODE_DES"])
+    print()
+
+    print("GEO_ID: unique geographic identifier")
+
+    print("LINK: geo_id of the primary address")
+    # Fetch and display the frequency of frequency for 'link' in 'address_points'
+    display_frequency_of_frequency("address_points", "link")
+
+    print("ADDRESS: address number with suffix")
+    print("Select address values")
+    display_mixed_addresses()
+
+    print("LFNAME: LINEAR_NAME_FULL (Street Name)")
+    
+
+    # Fetch and display unique values and their counts for 'maint_stag' in 'address_points'
+    display_frequency_distribution("address_points", "maint_stag")
+
+    # Fetch and display unique values and their counts for 'mun_name' in 'address_points'
+    display_frequency_distribution("address_points", "mun_name")
+
+    # Fetch and display unique values and their counts for 'ward_name' in 'address_points'
+    display_frequency_distribution("address_points", "ward_name")
     
     # Property Boundaries Section
     print("Property boundaries:")
     print("Parcel count:", get_row_count("property_boundaries"))
     print_table_details("property_boundaries")
+    display_column_uniqueness("property_boundaries")
 
-    # Check uniqueness for property_boundaries table
-    property_boundaries_unique_cols, property_boundaries_non_unique_cols = check_column_uniqueness("property_boundaries")
-
-    # Ensure that the non-unique columns list isn't empty for the table display
-    if not property_boundaries_non_unique_cols:
-        property_boundaries_non_unique_cols.append("N/A")
-    
-    print("Columns in property_boundaries:")
-    print_table(["Unique Columns", "Non-unique Columns"],list(zip_longest(property_boundaries_unique_cols, property_boundaries_non_unique_cols,fillvalue="")))
-
+    # Fetch and display unique values and their counts for 'f_type' in 'property_boundaries'
+    display_column_values_and_counts("property_boundaries", "f_type")
