@@ -4,7 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-ipykernel = "6.25.2"
+jupyter = "1.0.0"
+datasette = "*"
 
 [dev-packages]
 black = "23.7.0"
