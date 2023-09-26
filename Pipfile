@@ -4,12 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-jupyter = "1.0.0"
 datasette = "*"
+requests = "*"
 
 [dev-packages]
 black = "23.7.0"
-pre-commit = "3.4.0"
 
 [requires]
 python_version = "3.11.5"
