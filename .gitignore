@@ -159,8 +159,6 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-# Date
-Municipal address points (wgs84) - shapefile/
-Property Boundaries (wgs84) - shapefile/
-toronto.sqlite
-toronto.sqlite-journal
+# Data
+address-points-municipal-toronto-one-address-repository/
+property-boundaries/
