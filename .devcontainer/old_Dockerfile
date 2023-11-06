@@ -1,0 +1,21 @@
+FROM python:3.11
+
+# System update and prerequisites
+RUN apt update && \
+    apt install -y gnupg software-properties-common
+
+# Add QGIS repository for Debian (adjust for the Debian version that Python 3.11 image is based on)
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-key 51F523511C7028C3 && \
+    echo "deb https://qgis.org/debian bullseye main" >> /etc/apt/sources.list
+
+# Update repositories after adding new sources
+RUN apt update
+
+# Install QGIS and its Python 3 bindings
+RUN apt install -y qgis python3-qgis qgis-plugin-grass
+
+# Pip upgrades and Python environment setup
+RUN rm -rf .venv && \
+    pip install --upgrade pip && \
+    pip install pipenv && \
+    echo 'if [ -f "Pipfile" ]; then source $(pipenv --venv)/bin/activate; fi' >> ~/.bashrc
